@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080b10">
+    <meta name="description" content="Two-tiered medical agent pipeline combining Gemini 2.5 Flash and Groq Llama 3.3 70B for safe, evaluated clinical guidance.">
+    <title>MediAgent · Two-Tiered Clinical AI Pipeline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+    <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+  </head>
+  <body>
+    <!-- Top Emergency Banner -->
+    <aside class="emergency-bar" role="region" aria-label="Emergency warning">
+      <div class="emergency-bar-inner">
+        <span class="emergency-pulse" aria-hidden="true"></span>
+        <span class="emergency-text">
+          <strong>Medical Emergency?</strong> If you or someone with you experiences severe chest pain, sudden numbness, difficulty breathing, or severe bleeding, call <strong>1122</strong> (Rescue 1122 or your local emergency number) immediately.
+        </span>
+      </div>
+    </aside>
+
+    <div class="page-shell">
+      <!-- Header -->
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-crest" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect x="2" y="2" width="28" height="28" rx="8" class="crest-bg"/>
+              <path d="M16 7v18M7 16h18" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+              <circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 3" opacity=".7"/>
+            </svg>
+          </div>
+          <div class="brand-info">
+            <div class="brand-name">Medi<span>Agent</span></div>
+            <div class="brand-sub">Two-Tier Clinical Intelligence · Port 9995</div>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="pipeline-pill" id="pipeline-status-pill" title="Pipeline Status">
+            <span class="status-dot active"></span>
+            <span class="pipeline-label">Gemini 2.5 Flash + Groq Llama 3.3 70B</span>
+          </div>
+          <button type="button" class="btn-icon" id="settings-toggle" aria-label="API Settings &amp; Diagnostics" title="API Status &amp; Configuration">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span class="btn-text">Settings</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Layout -->
+      <main>
+        <!-- Hero Section -->
+        <section class="hero-section" aria-labelledby="hero-title">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Dual-Model Medical Verification Pipeline
+          </div>
+          <h1 id="hero-title">
+            Primary Symptom Response &amp; <br>
+            <span class="text-gradient">Independent Safety Audit</span>
+          </h1>
+          <p class="hero-desc">
+            A medical AI architecture combining <strong>Google Gemini 2.5 Flash</strong> for primary clinical synthesis with <strong>Groq Llama 3.3 70B</strong> for real-time safety evaluation, clinical hallucination scoring, and precision refinement.
+          </p>
+
+          <!-- Interactive Pipeline Map -->
+          <div class="pipeline-track" aria-label="Two-tiered agent architecture">
+            <div class="tier-card tier-1">
+              <div class="tier-header">
+                <span class="tier-tag">TIER 1 · PRIMARY SYNTHESIS</span>
+                <span class="model-badge gemini-badge">Gemini 2.5 Flash</span>
+              </div>
+              <div class="tier-body">
+                <strong>google-genai</strong> parses reported symptoms, constructs clinical differentials, outlines non-diagnostic next steps, and flags urgent warning signs.
+              </div>
+            </div>
+            <div class="pipeline-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+            <div class="tier-card tier-2">
+              <div class="tier-header">
+                <span class="tier-tag">TIER 2 · SAFETY &amp; ACCURACY AUDIT</span>
+                <span class="model-badge groq-badge">Llama 3.3 70B</span>
+              </div>
+              <div class="tier-body">
+                <strong>groq</strong> independently audits the draft, scores Safety &amp; Accuracy (0–100), eliminates unsubstantiated claims, and produces the finalized guidance.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Symptom Workspace Section -->
+        <section class="workspace" aria-label="Symptom evaluation workspace">
+          <div class="workspace-head">
+            <div class="step-label">
+              <span class="step-badge">01</span>
+              <span>PATIENT SYMPTOM REPORT</span>
+            </div>
+            <div class="workspace-meta">
+              <span class="privacy-pill">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V4.5a2.5 2.5 0 0 1 5 0V7"/></svg>
+                Ephemeral &amp; Unsaved
+              </span>
+            </div>
+          </div>
+
+          <!-- Clinical Preset Selector Chips -->
+          <div class="presets-bar" aria-label="Sample clinical scenarios">
+            <span class="presets-label">Sample Cases:</span>
+            <div class="presets-scroll" id="presets-container">
+              <button type="button" class="preset-chip" data-preset="tension_headache">
+                <span class="chip-icon">⚡</span>
+                <span class="chip-title">Tension Headache</span>
+                <span class="chip-badge routine">Routine</span>
+              </button>
+              <button type="button" class="preset-chip" data-preset="chest_pain">
+                <span class="chip-icon">🚨</span>
+                <span class="chip-title">Acute Chest Pain</span>
+                <span class="chip-badge emergency">Emergency</span>
+              </button>
+              <button type="button" class="preset-chip" data-preset="persistent_cough">
+                <span class="chip-icon">🩺</span>
+                <span class="chip-title">Persistent Cough</span>
+                <span class="chip-badge urgent">Urgent</span>
+              </button>
+              <button type="button" class="preset-chip" data-preset="diabetic_foot">
+                <span class="chip-icon">🩸</span>
+                <span class="chip-title">Diabetic Foot Ulcer</span>
+                <span class="chip-badge urgent">Urgent</span>
+              </button>
+              <button type="button" class="preset-chip" data-preset="pediatric_fever">
+                <span class="chip-icon">🌡️</span>
+                <span class="chip-title">Pediatric Fever &amp; Rash</span>
+                <span class="chip-badge routine">Clinical</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Symptom Input Form -->
+          <form id="symptom-form" class="symptom-form">
+            <div class="input-shell">
+              <label class="sr-only" for="symptoms">Describe your symptoms in detail</label>
+              <textarea 
+                id="symptoms" 
+                name="symptoms" 
+                maxlength="4000" 
+                placeholder="Describe what you are feeling in detail: when it began, severity (1-10), aggravating/alleviating factors, past medical history, and any associated sensations..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-footer">
+              <div class="char-counter">
+                <span id="char-count">0</span> / 4,000 characters
+              </div>
+              <div class="form-actions">
+                <button type="button" id="clear-button" class="btn-secondary" title="Clear text">
+                  Clear
+                </button>
+                <button type="submit" id="submit-button" class="btn-primary">
+                  <span class="btn-label">Run Two-Tier Evaluation</span>
+                  <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="4" y1="10" x2="16" y2="10"></line>
+                    <polyline points="10 4 16 10 10 16"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Pipeline Progress Indicator (Animated during evaluation) -->
+          <div id="pipeline-progress" class="pipeline-progress" hidden aria-live="polite">
+            <div class="progress-track">
+              <div class="progress-step active" id="step-tier1">
+                <div class="step-spin"></div>
+                <div class="step-text">
+                  <strong>Tier 1: Gemini 2.5 Flash</strong>
+                  <span>Synthesizing primary clinical guidance...</span>
+                </div>
+              </div>
+              <div class="progress-divider"></div>
+              <div class="progress-step" id="step-tier2">
+                <div class="step-spin"></div>
+                <div class="step-text">
+                  <strong>Tier 2: Groq Llama 3.3 70B</strong>
+                  <span>Auditing safety, scoring accuracy &amp; refining...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Message Banner -->
+          <div id="error-message" class="error-message" role="alert" hidden>
+            <div class="error-icon" aria-hidden="true">⚠️</div>
+            <div class="error-content" id="error-text"></div>
+          </div>
+
+          <!-- Result Panel -->
+          <section id="result-panel" class="result-panel" aria-live="polite" hidden>
+            <!-- Emergency Alert Banner (Shown if emergency detected) -->
+            <div id="emergency-alert" class="emergency-alert" hidden>
+              <div class="alert-icon" aria-hidden="true">🚨</div>
+              <div class="alert-body">
+                <h3>URGENT / EMERGENCY SIGNS DETECTED</h3>
+                <p>The symptoms provided indicate a potentially critical medical scenario. Do not delay: immediately contact emergency rescue dispatch (<strong>1122</strong>) or proceed to the nearest emergency room.</p>
+              </div>
+            </div>
+
+            <!-- Scoreboard Topline -->
+            <div class="scoreboard-bar">
+              <div class="triage-status">
+                <span class="triage-label">CLINICAL TRIAGE LEVEL</span>
+                <span id="triage-pill" class="triage-pill routine">Routine / Self-Care</span>
+              </div>
+
+              <!-- Score Gauges -->
+              <div class="score-cards">
+                <div class="score-card" id="card-safety">
+                  <div class="score-gauge">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                      <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="circle safety-circle" stroke-dasharray="95, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <span class="score-number" id="safety-score-val">95</span>
+                  </div>
+                  <div class="score-info">
+                    <span class="score-title">SAFETY SCORE</span>
+                    <span class="score-sub">Groq Audited</span>
+                  </div>
+                </div>
+
+                <div class="score-card" id="card-accuracy">
+                  <div class="score-gauge">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                      <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="circle accuracy-circle" stroke-dasharray="98, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <span class="score-number" id="accuracy-score-val">98</span>
+                  </div>
+                  <div class="score-info">
+                    <span class="score-title">ACCURACY SCORE</span>
+                    <span class="score-sub">Clinical Grounding</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Toolbar -->
+              <div class="result-actions">
+                <button type="button" class="btn-action" id="copy-guidance-btn" title="Copy markdown to clipboard">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>Copy</span>
+                </button>
+                <button type="button" class="btn-action" id="print-guidance-btn" title="Print or save as PDF">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg>
+                  <span>Print</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tabbed Navigation -->
+            <div class="tab-header" role="tablist">
+              <button type="button" class="tab-btn active" role="tab" id="tab-refined-btn" aria-selected="true" aria-controls="tab-refined">
+                <span class="tab-indicator"></span>
+                <span class="tab-title">Refined Guidance (Final)</span>
+                <span class="tab-badge groq-badge" id="refined-model-tag">Groq Llama 3.3 70B</span>
+              </button>
+              <button type="button" class="tab-btn" role="tab" id="tab-draft-btn" aria-selected="false" aria-controls="tab-draft">
+                <span class="tab-indicator"></span>
+                <span class="tab-title">Tier 1 Gemini Draft</span>
+                <span class="tab-badge gemini-badge" id="draft-model-tag">Gemini 2.5 Flash</span>
+              </button>
+              <button type="button" class="tab-btn" role="tab" id="tab-audit-btn" aria-selected="false" aria-controls="tab-audit">
+                <span class="tab-indicator"></span>
+                <span class="tab-title">Safety Audit &amp; Concerns</span>
+                <span class="tab-count" id="concerns-count-badge">0</span>
+              </button>
+            </div>
+
+            <!-- Tab 1: Refined Response -->
+            <div id="tab-refined" class="tab-panel active" role="tabpanel" aria-labelledby="tab-refined-btn">
+              <article id="response" class="markdown-body"></article>
+            </div>
+
+            <!-- Tab 2: Tier 1 Raw Draft -->
+            <div id="tab-draft" class="tab-panel" role="tabpanel" aria-labelledby="tab-draft-btn" hidden>
+              <div class="draft-notice">
+                <span class="notice-icon">ℹ️</span>
+                <span>This is the unedited primary response generated by Gemini before Groq's safety audit and refinement.</span>
+              </div>
+              <article id="draft-response" class="markdown-body draft-body"></article>
+            </div>
+
+            <!-- Tab 3: Safety & Accuracy Audit -->
+            <div id="tab-audit" class="tab-panel" role="tabpanel" aria-labelledby="tab-audit-btn" hidden>
+              <div class="audit-summary-box">
+                <div class="audit-head">
+                  <h3 class="audit-title">Tier 2 Evaluator Findings</h3>
+                  <span class="audit-model-pill" id="audit-model-pill">Audited by Groq Llama 3.3 70B</span>
+                </div>
+                <div id="concerns-list-container" class="concerns-list-container"></div>
+              </div>
+
+              <!-- Verification Checklist -->
+              <div class="checklist-box">
+                <h4>Safety &amp; Compliance Protocol Checklist</h4>
+                <ul class="checklist-items">
+                  <li class="check-item verified">
+                    <span class="check-icon">✓</span>
+                    <span><strong>No Prescriptive Dosing:</strong> Model avoided prescribing pharmaceuticals or recommending alterations to existing medication regimens.</span>
+                  </li>
+                  <li class="check-item verified">
+                    <span class="check-icon">✓</span>
+                    <span><strong>Non-Diagnostic Framing:</strong> Guidance frames possibilities as clinical differentials rather than authoritative diagnoses.</span>
+                  </li>
+                  <li class="check-item verified">
+                    <span class="check-icon">✓</span>
+                    <span><strong>Red Flag Escalation:</strong> High-risk symptoms have explicit, prioritized emergency warnings.</span>
+                  </li>
+                  <li class="check-item verified">
+                    <span class="check-icon">✓</span>
+                    <span><strong>Dual-Model Consensus:</strong> Both tiers completed synthesis and safety validation.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Disclaimer Notice -->
+            <div class="result-disclaimer">
+              <div class="disclaimer-icon">⚠️</div>
+              <div class="disclaimer-text">
+                <strong>Clinical AI Informational Notice:</strong> MediAgent is an experimental, dual-tiered artificial intelligence decision-support demonstration. It is not an electronic medical record or certified medical device, and does not establish a physician-patient relationship. Always consult a qualified physician or healthcare provider for diagnosis and treatment.
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- Technical Pipeline Explanation -->
+        <section class="deep-dive" aria-label="System Architecture">
+          <h2 class="section-heading">How the Two-Tier Medical Agent Works</h2>
+          <div class="deep-dive-grid">
+            <div class="deep-dive-card">
+              <div class="card-num">01</div>
+              <h3>Primary Symptom Generation</h3>
+              <p>Powered by <code>google-genai</code> and <strong>Gemini 2.5 Flash</strong>. Fast, empathetic, and structurally comprehensive reasoning about patient-reported symptoms, potential differentials, and standard conservative management.</p>
+              <div class="card-footer-tag">Tier 1 · Clinical Synthesis</div>
+            </div>
+            <div class="deep-dive-card">
+              <div class="card-num">02</div>
+              <h3>Adversarial Safety Audit</h3>
+              <p>Powered by <code>groq</code> and <strong>Llama 3.3 70B</strong>. Evaluates the Tier 1 draft against strict clinical protocols: safety scoring, checking for hallucinated treatments, and grading accuracy on a 0–100 scale.</p>
+              <div class="card-footer-tag">Tier 2 · Adversarial Review</div>
+            </div>
+            <div class="deep-dive-card">
+              <div class="card-num">03</div>
+              <h3>Refinement &amp; High-Contrast Presentation</h3>
+              <p>The auditor rewrites and refines the draft into clear, high-contrast GitHub-flavored Markdown. Crucial clinical alerts and next steps are highlighted with high visual distinction.</p>
+              <div class="card-footer-tag">Tier 2 Output · Markdown UI</div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-left">
+          <span><strong>MediAgent</strong> · Two-Tier Medical AI Pipeline</span>
+          <span class="footer-sep">·</span>
+          <span>Port 9995</span>
+          <span class="footer-sep">·</span>
+          <span>Flask &amp; Python 3</span>
+        </div>
+        <div class="footer-right">
+          <span>Gemini 2.5 Flash (Tier 1) + Groq Llama 3.3 70B (Tier 2)</span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Settings & API Status Modal -->
+    <div id="settings-modal" class="modal-backdrop" hidden>
+      <div class="modal-dialog" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+        <div class="modal-header">
+          <h3 id="modal-title">API Configuration &amp; Diagnostics</h3>
+          <button type="button" class="modal-close" id="modal-close-btn" aria-label="Close dialog">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-intro">
+            View active API connectivity or supply custom API keys for this session.
+          </p>
+
+          <div class="status-indicators">
+            <div class="status-row">
+              <span class="status-name">Google GenAI (Gemini)</span>
+              <span id="gemini-status-badge" class="badge-status checking">Checking...</span>
+            </div>
+            <div class="status-row">
+              <span class="status-name">Groq API (Llama 3.3 70B)</span>
+              <span id="groq-status-badge" class="badge-status checking">Checking...</span>
+            </div>
+            <div class="status-row">
+              <span class="status-name">Flask Server</span>
+              <span class="badge-status ok">Running on :9995</span>
+            </div>
+          </div>
+
+          <form id="keys-form" class="keys-form">
+            <div class="form-group">
+              <label for="gemini-key-input">Gemini API Key (Optional Override):</label>
+              <input type="password" id="gemini-key-input" placeholder="AIzaSy... or AQ.Ab8..." autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="groq-key-input">Groq API Key (Optional Override):</label>
+              <input type="password" id="groq-key-input" placeholder="gsk_..." autocomplete="off">
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="save-keys-btn" class="btn-primary">Save Session Keys</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

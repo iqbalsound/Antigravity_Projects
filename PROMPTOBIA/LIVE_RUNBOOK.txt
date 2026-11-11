@@ -1,0 +1,50 @@
+METAORIGIN LIVE RUNBOOK (Kubuntu 26.04, Antigravity, limited internet)
+
+A. THE DAY BEFORE (with good internet)
+1. GitHub: create the blank repository (no README, no license, no .gitignore). Prepare push access (SSH key or a personal access token) and test it:  git ls-remote https://github.com/USER/REPO.git   (or ssh). Do not use the gh tool.
+2. Laptop tools, run once:  python3 --version ; dpkg-deb --version ; gpg --version ; git --version ; command -v kdialog md5sum sha256sum
+   Check the clock and timezone (APT Release dates use the system clock):  date -u
+3. Antigravity settings (names vary by version; look in Settings > Agent):
+   - Agent mode: Fast (no planning step).
+   - Terminal command auto execution: Turbo or Always Proceed.
+   - Review / artifact policy: Always Proceed.
+   - Add a deny list so Turbo stays safe: sudo, rm -rf, git push, curl, wget, pip, apt.
+   - Re-check these right before you paste; settings can reset after an update or restart.
+   - Use the Agent Manager conversation, not inline editor suggestions, so there is nothing to Accept.
+4. Rehearse once with the BACKUP installer in an empty folder:  bash BACKUP_install_metaorigin.sh
+   (it asks the 6 questions, creates the project, runs tests, builds the .deb and APT repo, checks the repo with real apt, and runs the demo). Delete the folder afterwards.
+5. Keep these four files on the laptop: PROMPT_A_Antigravity.txt, PROMPT_B_Claude.txt, BACKUP_install_metaorigin.sh, this runbook.
+
+B. LIVE ORDER
+1. Prompt A: open a new Antigravity conversation in an empty workspace, paste PROMPT_A_Antigravity.txt. Answer the 6 questions in one message. Wait. It must end with "ALL TESTS PASSED", a .deb in dist/, "APT repository check: OK".
+2. Prompt B: open a new Claude chat, paste PROMPT_B_Claude.txt, answer the 6 questions, save the reply script as install_metaorigin.sh, run  bash install_metaorigin.sh  in an empty folder.
+3. If either one stalls or the internet drops: run  bash BACKUP_install_metaorigin.sh  (works offline) and continue the demo.
+4. Demo commands from the project folder:
+     bash scripts/demo.sh
+     python3 src/metaorigin.py samples/edited.docx
+     python3 src/metaorigin.py --md5 samples/notes.txt ; md5sum samples/notes.txt
+     python3 src/metaorigin.py --verify HASH samples/notes.txt
+   Try a real file too (a phone photo, a PDF or a Word file). Remember: the verdict is a heuristic; only --verify against a trusted hash proves a file is unchanged.
+   Optional install test on the same laptop:  sudo apt install ./dist/metaorigin_1.0_all.deb  then  metaorigin --about  and  metaorigin-gui  (KDE menu: MetaOrigin).
+
+C. GITHUB (browser, no gh)
+1. Terminal in the project folder:
+     bash scripts/git_init.sh https://github.com/USER/REPO.git
+     bash scripts/release_v1.sh
+     git push -u origin main --tags
+2. Release: GitHub > Releases > Draft a new release > Choose tag v1.0 > Release title "V1.0" > attach the four files from dist/ (metaorigin_1.0_all.deb, metaorigin-1.0-src.tar.gz, SHA256SUMS, MD5SUMS) > Publish release.
+3. Page and APT repo: Settings > Pages > Source: Deploy from a branch > Branch: main, folder /docs > Save. Wait 1-2 minutes. Site: https://USER.github.io/REPO/ ; APT repo: https://USER.github.io/REPO/apt
+4. On any Ubuntu or Kubuntu machine:
+     sudo install -d -m 0755 /etc/apt/keyrings
+     curl -fsSL https://USER.github.io/REPO/apt/metaorigin.gpg | sudo tee /etc/apt/keyrings/metaorigin.gpg >/dev/null
+     printf 'Types: deb\nURIs: https://USER.github.io/REPO/apt\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/metaorigin.gpg\n' | sudo tee /etc/apt/sources.list.d/metaorigin.sources
+     sudo apt update && sudo apt install metaorigin
+
+D. IF SOMETHING GOES WRONG
+- Antigravity keeps asking to accept: re-check section A3; start a new conversation in Fast mode.
+- "Release file is not valid yet": the system clock is wrong. Fix it, run bash scripts/make_apt_repo.sh again, commit and push.
+- NO_PUBKEY on apt update: the key file is not at /etc/apt/keyrings/metaorigin.gpg or the Signed-By path is wrong.
+- Pages shows 404: wait two minutes; confirm Pages uses main and /docs; confirm docs/apt/dists/stable/InRelease exists in the repo.
+- git push rejected: the repository was not blank. Create a new blank one or merge with git pull --rebase.
+- gpg key creation slow or fails: check  gpg --version , make sure ~/.local/share/metaorigin-gnupg is writable, rerun make_apt_repo.sh. Without gpg the repo is unsigned (use [trusted=yes] only for a demo).
+- The private signing key lives in ~/.local/share/metaorigin-gnupg. Never copy it into the repository.

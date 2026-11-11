@@ -1,0 +1,110 @@
+You are Claude. I will run your answer on my Kubuntu 26.04 laptop, and you cannot create folders there. So you will give me ONE bash script named install_metaorigin.sh that creates the whole project (every folder and file in the specification), then runs the tests, builds the .deb and the APT repository, and runs the demo.
+
+STEP 0. Before anything else, ask me these 6 questions in ONE message, numbered, and wait for my answers. Do not write code or create files yet.
+  1. Creator name (of the pre-built blank repository)
+  2. Email
+  3. Designation
+  4. Company
+  5. GitHub username
+  6. GitHub repository name (the blank repo I already created)
+After I answer, never ask me anything again, never ask for permission or confirmation, and make every decision yourself.
+
+AFTER MY ANSWERS, reply with ONLY: one short line, then the script in ONE code block fenced with FOUR backticks (use ````bash), then a numbered list of at most 8 lines (how to run it, then my manual GitHub steps). If you can create files, also attach install_metaorigin.sh. No web search, no tools needed.
+
+SCRIPT RULES
+- Start with #!/usr/bin/env bash and set -euo pipefail. Put my 6 answers at the top as shell variables in single quotes (escape any single quote); no prompts and no placeholders anywhere. Create every folder first with mkdir -p.
+- Create each file with cat > path <<'MO_EOF_NN' using a quoted, unique delimiter per file, then chmod. Use python3 (not sed) for any substitution of my answers into files, and json.dump for about.json.
+- Never put triple backticks inside any file content (the README uses indented code blocks), so the four-backtick fence stays intact.
+- Create all files first, then run steps 2-8 of ORDER OF WORK in sequence, stop at the first failure with a clear message, and at the end print the FINAL REPORT manual steps. Support the option --no-run (create files only).
+- My answers replace the placeholders GHUSER, GHREPO and NAME, EMAIL, DESIGNATION, COMPANY used in the specification.
+- If the answer would become too long, shorten comments, README and index.html, but never drop a file from the tree. Do not write fixes for problems you cannot see; write the code correctly the first time.
+
+=== SPECIFICATION ===
+PROJECT: MetaOrigin V1.0 (project folder name: metaorigin). One job only: show a file's metadata, its MD5 (plus SHA-256), and whether it looks edited or original. Pure Python 3 standard library, CLI plus a small KDE dialog front end, installable as .deb.
+
+HARD RULES
+1. Python 3 standard library only. Target Python 3.10+. Kubuntu 26.04 ships a very new Python, so do NOT use removed modules (cgi, imghdr, pipes, distutils, telnetlib, pkg_resources). No pip, npm, apt install, sudo, downloads, web search or network calls: my internet is very limited.
+2. Allowed tools only: python3, bash, git, dpkg-deb, gzip, gpg, md5sum, sha256sum, tar, stat, kdialog (optional).
+3. Every shell script: #!/usr/bin/env bash and set -euo pipefail. Never pipe a command into head (SIGPIPE breaks pipefail).
+4. Read-only: never execute, open for writing or modify an analyzed file. Hash in 1 MiB chunks. Parse metadata only for files up to 64 MiB (larger: hashes only).
+5. Never run git push, sudo, or rm -rf outside the project folder.
+6. Keep it small: src/metaorigin.py at most 450 lines, short comments, no extra features.
+
+FOLDER TREE (create exactly this; scripts/bootstrap.sh creates the folders, makes scripts executable and runs tests/make_samples.py; it must be safe to run twice)
+metaorigin/
+  README.md  LICENSE  CHANGELOG.md  .gitignore (build/ dist/ __pycache__/ *.pyc .gnupg/)
+  src/metaorigin.py  src/about.json
+  packaging/metaorigin  packaging/metaorigin-gui  packaging/metaorigin.desktop  packaging/metaorigin.svg  packaging/make_repo.py
+  scripts/bootstrap.sh  build_deb.sh  make_apt_repo.sh  check_apt_local.sh  git_init.sh  release_v1.sh  demo.sh
+  tests/make_samples.py  tests/run_tests.sh
+  docs/index.html  docs/.nojekyll   (docs/apt is generated)
+  samples/  dist/  build/           (generated)
+
+COMMAND LINE (src/metaorigin.py, argparse)
+  metaorigin FILE [FILE...]      full report
+  --md5          print only "md5  path" lines (same format as md5sum)
+  --json         machine-readable report
+  --verify HASH  compare with a trusted hash: 32 hex chars = MD5, otherwise SHA-256; print "Verify   : MATCH" or "MISMATCH"
+  --about        print author information from about.json (app, version, tagline, name, designation, company, email, homepage)
+  --version
+Exit codes: 0 no edit indicators; 1 edit indicators found or verify mismatch; 2 error (missing file, directory). Call signal.signal(SIGPIPE, SIG_DFL) at start of main.
+
+REPORT LABELS (exact): File, MD5, SHA-256, Size, Type, Modified, Changed, Accessed, Created (only if "stat -c %W" gives a value above 0), Verify (only with --verify), Metadata (key: value lines), Evidence (lines like "[+3] text"), VERDICT ("VERDICT  : LIKELY EDITED (score 6)"), Note. Times in UTC. MD5 uses hashlib.md5(usedforsecurity=False).
+Note text: "Heuristic only: metadata can be stripped or forged. The only proof a file is unchanged is a match with a trusted hash (use --verify)."
+
+DETECTION (read magic bytes first; ZIP is OOXML if it has [Content_Types].xml, ODF if mimetype starts with application/vnd.oasis)
+Score = sum of points. Verdict: score >= 3 "LIKELY EDITED"; 1-2 "POSSIBLY EDITED"; 0 and some embedded metadata found "NO EDIT INDICATORS FOUND"; 0 and no metadata "INCONCLUSIVE". Empty file: INCONCLUSIVE.
+All files: +2 extension does not match the content type (jpg/jpeg, png, pdf, gif, bmp, zip/docx/xlsx/pptx/odt/ods/odp, exe, mp3, gz); +1 modified time more than 1 day in the future.
+PNG (walk chunks): +3 tEXt Software names an editor (photoshop, lightroom, gimp, paint.net, pixlr, snapseed, canva, affinity, picsart, facetune, luminar, capture one, acdsee, photoscape, fotor, krita); +3 iTXt XMP (keyword XML:com.adobe.xmp) contains History, DerivedFrom or photoshop:; +1 tIME chunk present; +2 bytes after IEND. Show tEXt fields, image size and tIME as metadata.
+JPEG (walk markers; read APP1 Exif little or big endian IFD0 + Exif IFD, ASCII and SHORT/LONG tags Make, Model, Software, DateTime, DateTimeOriginal, ExifWidth, ExifHeight): +3 Software names an editor; +3 XMP contains History, DerivedFrom or photoshop:; +2 DateTime differs from DateTimeOriginal by more than 2 seconds; +2 Exif dimensions differ from SOF dimensions; +1 bytes after the final FFD9. No EXIF is shown as "EXIF: absent" and adds no points.
+PDF: count %%EOF; incremental updates = count - 1 (count - 2 if /Linearized appears in the first 2048 bytes); +3 if updates > 0; read /Producer /Creator /CreationDate /ModDate /Title /Author with a regex on the raw bytes; +2 ModDate more than 60 s after CreationDate; +1 Producer or Creator names an editing tool (pdf editor, pdfescape, sejda, ilovepdf, smallpdf, foxit, pdf-xchange, nitro, pdfelement, pdffiller, pikepdf, pypdf, pdftk, itext, acrobat).
+OOXML (docx, xlsx, pptx): read docProps/core.xml (creator, lastModifiedBy, created, modified, revision) and docProps/app.xml (Application, AppVersion, TotalTime): +2 revision > 1; +2 modified more than 60 s after created; +2 lastModifiedBy differs from creator (both non-empty); +1 TotalTime > 0; +3 word/document.xml contains "<w:ins " or "<w:del "; +1 a comments.xml part exists.
+ODF (odt, ods, odp): meta.xml: +2 editing-cycles > 1; +2 date more than 60 s after creation-date; +2 creator differs from initial-creator.
+Other types: only the generic checks. Parsing errors never crash: show "Parse note: partial".
+
+SAMPLES (tests/make_samples.py [outdir], stdlib only, deterministic) and the verdict each must produce
+  original.png  8x8 RGB PNG, tEXt Comment only ............ NO EDIT INDICATORS FOUND
+  edited.png    same plus tEXt Software "Adobe Photoshop 25.0", iTXt XMP with xmpMM:History, tIME chunk, 8 bytes after IEND ... LIKELY EDITED
+  original.pdf  minimal 1-page PDF, Info with Producer (MetaOrigin Sample), CreationDate=ModDate=D:20260101120000Z, one xref, one %%EOF ... NO EDIT INDICATORS FOUND
+  edited.pdf    original bytes plus a real incremental update: new object 4 (Info, Producer "Sejda PDF Editor", ModDate D:20260315093000Z), a new xref section for object 4, trailer with /Prev (first xref offset), startxref, %%EOF ... LIKELY EDITED
+  original.docx zip with [Content_Types].xml, _rels/.rels, word/document.xml, docProps/core.xml (creator = lastModifiedBy, created = modified, revision 1) ... NO EDIT INDICATORS FOUND
+  edited.docx   revision 7, lastModifiedBy different, modified 6 weeks later, document.xml contains <w:ins> ... LIKELY EDITED
+  camera.jpg    marker-only JPEG (not viewable): SOI, APP1 Exif little-endian with Make, Model, DateTime, SOF0 8x8, SOS, EOI ... NO EDIT INDICATORS FOUND
+  retouched.jpg same but Software "Adobe Photoshop Lightroom 13" ... LIKELY EDITED
+  renamed.jpg   the PNG bytes saved with a .jpg name ... POSSIBLY EDITED
+  notes.txt     one line of text ... INCONCLUSIVE
+tests/run_tests.sh: build samples in a temp dir; check each verdict through --json; check --md5 equals md5sum; --verify match exits 0, mismatch exits 1, missing file exits 2; print PASS/FAIL per check and "ALL TESTS PASSED"; exit 1 on any failure. scripts/demo.sh runs the tool on the eight main samples (original and edited pairs, renamed.jpg, notes.txt) printing MD5, Type, Evidence and VERDICT, then shows --verify.
+
+FRONT ENDS
+packaging/metaorigin: sh script, exec python3 /usr/lib/metaorigin/metaorigin.py "$@".
+packaging/metaorigin-gui: bash; loop with kdialog --menu (Check a file / About / Quit); kdialog --getopenfilename starting in $HOME; run the tool, show the report with kdialog --textbox (780x560); About shows the --about text. If kdialog is missing, print a hint and run the CLI. When /usr/lib/metaorigin/metaorigin.py does not exist, use ../src/metaorigin.py relative to the script.
+packaging/metaorigin.desktop: Name=MetaOrigin, Exec=metaorigin-gui, Icon=metaorigin, Terminal=false, Categories=Utility;. packaging/metaorigin.svg: small SVG icon (document plus magnifier).
+
+DEB (scripts/build_deb.sh, read name, email, version, homepage from src/about.json with python3, tab separated)
+Staging build/metaorigin_1.0_all/: DEBIAN/control, usr/bin/{metaorigin,metaorigin-gui} (755), usr/lib/metaorigin/{metaorigin.py,about.json} (644), usr/share/applications/metaorigin.desktop, usr/share/icons/hicolor/scalable/apps/metaorigin.svg, usr/share/doc/metaorigin/{README.md,copyright}. Directories 755.
+control: Package: metaorigin; Version: 1.0; Section: utils; Priority: optional; Architecture: all; Depends: python3 (>= 3.10); Recommends: kdialog; Maintainer: NAME <EMAIL>; Homepage: URL; Description: one line plus a short indented paragraph.
+Build: dpkg-deb --root-owner-group -Zxz --build STAGING dist/metaorigin_1.0_all.deb ; finish with dpkg-deb --info to /dev/null (no head).
+
+APT REPOSITORY for GitHub Pages (scripts/make_apt_repo.sh calls packaging/make_repo.py DEB docs/apt, stdlib only)
+Layout: docs/apt/pool/main/m/metaorigin/metaorigin_1.0_all.deb ; docs/apt/dists/stable/main/binary-amd64/, binary-arm64/ and binary-all/ each with Packages and Packages.gz (same stanza in all three: output of dpkg-deb -f plus Filename, Size, MD5sum, SHA256; gzip with mtime=0) ; docs/apt/dists/stable/Release with Origin, Label, Suite: stable, Codename: stable, Date (UTC, format "Mon, 09 Nov 2026 22:14:16 UTC"), Architectures: amd64 arm64 all, Components: main, Description, then MD5Sum: and SHA256: blocks listing every Packages and Packages.gz as " hash size path" (path relative to dists/stable, for example main/binary-amd64/Packages).
+Signing in make_apt_repo.sh: GNUPGHOME defaults to $HOME/.local/share/metaorigin-gnupg (outside the repo, mode 700). If it does not exist create a key with: gpg --batch --pinentry-mode loopback --passphrase '' --quick-generate-key "NAME (MetaOrigin APT) <EMAIL>" ed25519 sign never. Then: gpg --batch --yes --armor --detach-sign -o Release.gpg Release; gpg --batch --yes --clearsign -o InRelease Release; gpg --batch --yes --export -o docs/apt/metaorigin.gpg; same with --armor to metaorigin.asc. Never commit private keys. touch docs/.nojekyll.
+scripts/check_apt_local.sh (proves the repo with real apt, no root, no internet): python3 -m http.server on a random port bound to 127.0.0.1 --directory docs; temp dir with sources file "deb [signed-by=TEMP/key.gpg] http://127.0.0.1:PORT/apt stable main" (use [trusted=yes] only if metaorigin.gpg is missing); run apt-get and apt-cache with -o Dir::Etc::sourcelist=... -o Dir::Etc::sourceparts=/dev/null -o Dir::State=TEMP/state -o Dir::Cache=TEMP/cache -o Debug::NoLocking=1 -o APT::Sandbox::User=$(id -un) ; create TEMP/state/lists/partial and TEMP/cache/archives/partial first; run update, policy metaorigin, download metaorigin; clean up with a trap; print "APT repository check: OK".
+
+GIT AND RELEASE (no GitHub CLI; I push and publish in the browser)
+scripts/git_init.sh [REMOTE_URL]: git init -b main if needed; set repository-local user.name and user.email from about.json; add the remote when given; git add -A; commit "MetaOrigin V1.0".
+scripts/release_v1.sh: require a git repo and a clean tree; git archive --format=tar.gz --prefix=metaorigin-1.0/ to dist/metaorigin-1.0-src.tar.gz; create dist/SHA256SUMS and dist/MD5SUMS for the .deb and the tarball; create annotated tag v1.0 if missing; print the files to attach and the browser steps.
+
+ABOUT AND DOCS (use the 6 answers everywhere, never placeholders)
+src/about.json: app "MetaOrigin", version "1.0", tagline, name, designation, company, email, homepage https://github.com/GHUSER/GHREPO. Show the same details in: --about, the GUI About, README.md, LICENSE (MIT, current year, my name), docs/index.html, the .deb Maintainer, the git identity.
+README.md: what it does, usage, how the verdict works and its limits, APT install using the modern deb822 format:
+    sudo install -d -m 0755 /etc/apt/keyrings
+    curl -fsSL https://GHUSER.github.io/GHREPO/apt/metaorigin.gpg | sudo tee /etc/apt/keyrings/metaorigin.gpg >/dev/null
+    printf 'Types: deb\nURIs: https://GHUSER.github.io/GHREPO/apt\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/metaorigin.gpg\n' | sudo tee /etc/apt/sources.list.d/metaorigin.sources
+    sudo apt update && sudo apt install metaorigin
+Use indented code blocks in README.md, never triple backticks. docs/index.html: one static page, no external resources, dark navy (#0A0E2A) with cyan (#00F0FF) and violet (#A78BFA), install steps, links to https://github.com/GHUSER/GHREPO/releases and the repo, an About card with the author details.
+
+ORDER OF WORK (after my answers; no more questions, no confirmations)
+1 create the tree and files; 2 bash scripts/bootstrap.sh; 3 bash tests/run_tests.sh and fix until ALL TESTS PASSED (when a test fails fix the code or the sample, never the expected verdict); 4 bash scripts/build_deb.sh; 5 bash scripts/make_apt_repo.sh; 6 bash scripts/check_apt_local.sh; 7 bash scripts/demo.sh; 8 dpkg-deb -c on the .deb to confirm the file list.
+If a command fails: read the error, fix the cause, run it again. After 3 failed attempts on one problem, simplify that part but keep every file in the tree.
+
+FINAL REPORT (at most 15 lines): test result, .deb size, repo check result, then my manual steps: (1) bash scripts/git_init.sh https://github.com/GHUSER/GHREPO.git ; bash scripts/release_v1.sh ; git push -u origin main --tags ; (2) GitHub web: Releases > Draft a new release > tag v1.0 > title "V1.0" > attach dist/metaorigin_1.0_all.deb, dist/metaorigin-1.0-src.tar.gz, dist/SHA256SUMS, dist/MD5SUMS > Publish ; (3) GitHub web: Settings > Pages > Deploy from a branch > main > /docs > Save ; (4) after 1-2 minutes run the four install commands from README.md on a test machine.

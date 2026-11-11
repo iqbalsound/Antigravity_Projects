@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="md2html — Task done for PROMTOBIA" />
+  <title>⚡ md2html Showcase</title>
+  <style>
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #ffffff;
+  --surface:     #f7f8fa;
+  --border:      #e1e4e8;
+  --text:        #24292f;
+  --text-muted:  #57606a;
+  --accent:      #0969da;
+  --accent-dark: #0550ae;
+  --code-bg:     #f6f8fa;
+  --promtobia:   #6e40c9;
+  --promtobia-bg:#f3eeff;
+  --shadow:      0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #0d1117;
+    --surface:     #161b22;
+    --border:      #30363d;
+    --text:        #e6edf3;
+    --text-muted:  #8b949e;
+    --accent:      #58a6ff;
+    --accent-dark: #79c0ff;
+    --code-bg:     #161b22;
+    --promtobia:   #c0a0ff;
+    --promtobia-bg:#1f1535;
+    --shadow:      0 1px 3px rgba(0,0,0,.4);
+  }
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── PROMTOBIA Banner ──────────────────────────────────────── */
+.promtobia-banner {
+  background: linear-gradient(135deg, var(--promtobia) 0%, #9b6dff 100%);
+  color: #ffffff;
+  text-align: center;
+  padding: 10px 24px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow);
+}
+
+.promtobia-banner span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.promtobia-banner .badge-icon { font-size: 1rem; }
+
+/* ── Layout ────────────────────────────────────────────────── */
+header.page-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 24px;
+}
+
+header.page-header .title-row {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+header.page-header h1.doc-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+main {
+  flex: 1;
+  max-width: 860px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 24px 60px;
+}
+
+/* ── Typography ────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+h1 { font-size: 2rem;   border-bottom: 2px solid var(--border); padding-bottom: 0.3em; }
+h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25em; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.1rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.9rem; color: var(--text-muted); }
+
+p { margin-bottom: 1em; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; color: var(--accent-dark); }
+
+strong { font-weight: 700; }
+em     { font-style: italic; }
+
+/* ── Lists ─────────────────────────────────────────────────── */
+ul, ol { margin: 0.5em 0 1em 1.5em; }
+li { margin-bottom: 0.3em; }
+li > ul, li > ol { margin-top: 0.3em; }
+
+/* Task lists */
+input[type="checkbox"] { margin-right: 6px; accent-color: var(--promtobia); }
+
+/* ── Blockquotes ───────────────────────────────────────────── */
+blockquote {
+  border-left: 4px solid var(--accent);
+  margin: 1.2em 0;
+  padding: 0.6em 1.2em;
+  background: var(--surface);
+  border-radius: 0 6px 6px 0;
+  color: var(--text-muted);
+}
+
+blockquote p:last-child { margin-bottom: 0; }
+
+/* ── Inline Code ───────────────────────────────────────────── */
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875em;
+  background: var(--code-bg);
+  color: #cf222e;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  code { color: #ff7b72; }
+}
+
+/* ── Code Blocks (Pygments) ────────────────────────────────── */
+.highlight {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.2em 0;
+  box-shadow: var(--shadow);
+}
+
+.highlight pre {
+  margin: 0;
+  padding: 1em 1.2em;
+  overflow-x: auto;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: 1em;
+}
+
+/* ── Tables ────────────────────────────────────────────────── */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead { background: var(--surface); }
+
+th, td {
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  text-align: left;
+}
+
+th { font-weight: 700; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+tbody tr:nth-child(even) { background: var(--surface); }
+tbody tr:hover { background: var(--promtobia-bg); }
+
+/* ── Horizontal Rule ───────────────────────────────────────── */
+hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+
+/* ── Images ────────────────────────────────────────────────── */
+img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow); }
+
+/* ── Footer ────────────────────────────────────────────────── */
+footer.page-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 20px 24px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+footer.page-footer .promtobia-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--promtobia-bg);
+  color: var(--promtobia);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-top: 6px;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  main { padding: 0 14px 40px; }
+  h1 { font-size: 1.5rem; }
+  table { font-size: 0.85rem; }
+  th, td { padding: 7px 10px; }
+}
+
+/* Pygments Syntax Highlighting */
+pre { line-height: 125%; }
+td.linenos .normal { color: #666666; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #666666; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f0f0f0; }
+.highlight .c { color: #60A0B0; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #F00 } /* Error */
+.highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.highlight .o { color: #666 } /* Operator */
+.highlight .ch { color: #60A0B0; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #60A0B0; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #007020 } /* Comment.Preproc */
+.highlight .cpf { color: #60A0B0; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #60A0B0; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #60A0B0; background-color: #FFF0F0 } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #F00 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888 } /* Generic.Output */
+.highlight .gp { color: #C65D09; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #04D } /* Generic.Traceback */
+.highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #902000 } /* Keyword.Type */
+.highlight .m { color: #40A070 } /* Literal.Number */
+.highlight .s { color: #4070A0 } /* Literal.String */
+.highlight .na { color: #4070A0 } /* Name.Attribute */
+.highlight .nb { color: #007020 } /* Name.Builtin */
+.highlight .nc { color: #0E84B5; font-weight: bold } /* Name.Class */
+.highlight .no { color: #60ADD5 } /* Name.Constant */
+.highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.highlight .ni { color: #D55537; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #007020 } /* Name.Exception */
+.highlight .nf { color: #06287E } /* Name.Function */
+.highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.highlight .nn { color: #0E84B5; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #BB60D5 } /* Name.Variable */
+.highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #BBB } /* Text.Whitespace */
+.highlight .mb { color: #40A070 } /* Literal.Number.Bin */
+.highlight .mf { color: #40A070 } /* Literal.Number.Float */
+.highlight .mh { color: #40A070 } /* Literal.Number.Hex */
+.highlight .mi { color: #40A070 } /* Literal.Number.Integer */
+.highlight .mo { color: #40A070 } /* Literal.Number.Oct */
+.highlight .sa { color: #4070A0 } /* Literal.String.Affix */
+.highlight .sb { color: #4070A0 } /* Literal.String.Backtick */
+.highlight .sc { color: #4070A0 } /* Literal.String.Char */
+.highlight .dl { color: #4070A0 } /* Literal.String.Delimiter */
+.highlight .sd { color: #4070A0; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #4070A0 } /* Literal.String.Double */
+.highlight .se { color: #4070A0; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #4070A0 } /* Literal.String.Heredoc */
+.highlight .si { color: #70A0D0; font-style: italic } /* Literal.String.Interpol */
+.highlight .sx { color: #C65D09 } /* Literal.String.Other */
+.highlight .sr { color: #235388 } /* Literal.String.Regex */
+.highlight .s1 { color: #4070A0 } /* Literal.String.Single */
+.highlight .ss { color: #517918 } /* Literal.String.Symbol */
+.highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #06287E } /* Name.Function.Magic */
+.highlight .vc { color: #BB60D5 } /* Name.Variable.Class */
+.highlight .vg { color: #BB60D5 } /* Name.Variable.Global */
+.highlight .vi { color: #BB60D5 } /* Name.Variable.Instance */
+.highlight .vm { color: #BB60D5 } /* Name.Variable.Magic */
+.highlight .il { color: #40A070 } /* Literal.Number.Integer.Long */
+  </style>
+</head>
+<body>
+<div class="promtobia-banner"><span><span class="badge-icon">⚡</span>Task done for PROMTOBIA<span class="badge-icon">⚡</span></span></div>
+<header class="page-header">
+  <div class="title-row">
+    <h1 class="doc-title">⚡ md2html Showcase</h1>
+  </div>
+</header>
+<main>
+<h1 id="md2html-showcase">⚡ md2html Showcase<a class="headerlink" href="#md2html-showcase" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Task done for PROMTOBIA</strong> — This document demonstrates every feature of the md2html converter.</p>
+</blockquote>
+<hr>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<p>This page demonstrates all supported Markdown features rendered by <strong>md2html</strong>.</p>
+<hr>
+<h2 id="1-text-formatting">1. Text Formatting<a class="headerlink" href="#1-text-formatting" title="Permanent link">&para;</a></h2>
+<p>Paragraphs are separated by a blank line. Text can be <strong>bold</strong>, <em>italic</em>, or <strong><em>both at once</em></strong>. You can also use ~~strikethrough~~ and <code>inline code</code>.</p>
+<p>A second paragraph with a <a href="https://www.python.org">hyperlink to Python.org</a> and an auto-detected URL: https://github.com.</p>
+<hr>
+<h2 id="2-headings">2. Headings<a class="headerlink" href="#2-headings" title="Permanent link">&para;</a></h2>
+<h3 id="h3-subsection">H3 Subsection<a class="headerlink" href="#h3-subsection" title="Permanent link">&para;</a></h3>
+<h4 id="h4-deeper-subsection">H4 Deeper Subsection<a class="headerlink" href="#h4-deeper-subsection" title="Permanent link">&para;</a></h4>
+<h5 id="h5-even-deeper">H5 Even Deeper<a class="headerlink" href="#h5-even-deeper" title="Permanent link">&para;</a></h5>
+<h6 id="h6-deepest-level">H6 Deepest Level<a class="headerlink" href="#h6-deepest-level" title="Permanent link">&para;</a></h6>
+<hr>
+<h2 id="3-lists">3. Lists<a class="headerlink" href="#3-lists" title="Permanent link">&para;</a></h2>
+<h3 id="unordered-list">Unordered List<a class="headerlink" href="#unordered-list" title="Permanent link">&para;</a></h3>
+<ul>
+<li>🍎 Apple</li>
+<li>🍌 Banana</li>
+<li>Cavendish</li>
+<li>Plantain</li>
+<li>🍒 Cherry</li>
+</ul>
+<h3 id="ordered-list">Ordered List<a class="headerlink" href="#ordered-list" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Install Python 3.10+</li>
+<li>Install dependencies: <code>pip install -r requirements.txt</code></li>
+<li>Run the converter</li>
+<li>Open the HTML in your browser</li>
+</ol>
+<h3 id="task-list">Task List<a class="headerlink" href="#task-list" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] Core converter written</li>
+<li>[x] CSS styling applied</li>
+<li>[x] PROMTOBIA banner added</li>
+<li>[x] Unit tests written</li>
+<li>[ ] Deploy to production</li>
+</ul>
+<hr>
+<h2 id="4-code-blocks">4. Code Blocks<a class="headerlink" href="#4-code-blocks" title="Permanent link">&para;</a></h2>
+<h3 id="python-example">Python Example<a class="headerlink" href="#python-example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">md2html.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_file</span>
+
+<span class="c1"># Convert a Markdown file to clean HTML</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">convert_file</span><span class="p">(</span><span class="s2">&quot;README.md&quot;</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="bash-commands">Bash Commands<a class="headerlink" href="#bash-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run all unit tests</span>
+pytest<span class="w"> </span>-v<span class="w"> </span>--tb<span class="o">=</span>short
+
+<span class="c1"># Convert a single file</span>
+python<span class="w"> </span>-m<span class="w"> </span>md2html.cli<span class="w"> </span>notes.md<span class="w"> </span>--open
+
+<span class="c1"># Convert a whole directory recursively</span>
+python<span class="w"> </span>-m<span class="w"> </span>md2html.cli<span class="w"> </span>docs/<span class="w"> </span>-o<span class="w"> </span>build/<span class="w"> </span>--recursive
+</code></pre></div>
+
+<h3 id="json-configuration">JSON Configuration<a class="headerlink" href="#json-configuration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;theme&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;recursive&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./build&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;branding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;credit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Task done for PROMTOBIA&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr>
+<h2 id="5-tables">5. Tables<a class="headerlink" href="#5-tables" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Supported</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Headings (H1–H6)</td>
+<td>✅</td>
+<td>Auto-extracted as <code>&lt;title&gt;</code></td>
+</tr>
+<tr>
+<td>Bold / Italic</td>
+<td>✅</td>
+<td>Standard Markdown syntax</td>
+</tr>
+<tr>
+<td>Tables</td>
+<td>✅</td>
+<td>GFM-style pipe tables</td>
+</tr>
+<tr>
+<td>Code highlighting</td>
+<td>✅</td>
+<td>Pygments with <code>friendly</code> theme</td>
+</tr>
+<tr>
+<td>Task lists</td>
+<td>✅</td>
+<td>Rendered with checkboxes</td>
+</tr>
+<tr>
+<td>Blockquotes</td>
+<td>✅</td>
+<td>Left-border accent styling</td>
+</tr>
+<tr>
+<td>Dark mode</td>
+<td>✅</td>
+<td><code>prefers-color-scheme</code> auto-detect</td>
+</tr>
+<tr>
+<td>PROMTOBIA banner</td>
+<td>✅</td>
+<td>Top banner + footer badge</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-blockquotes">6. Blockquotes<a class="headerlink" href="#6-blockquotes" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>&ldquo;The best way to predict the future is to invent it.&rdquo;<br>
+— Alan Kay</p>
+<p><strong>Nested quote example:</strong></p>
+<blockquote>
+<p>&ldquo;Simplicity is the ultimate sophistication.&rdquo;<br>
+— Leonardo da Vinci</p>
+</blockquote>
+</blockquote>
+<hr>
+<h2 id="7-horizontal-rules">7. Horizontal Rules<a class="headerlink" href="#7-horizontal-rules" title="Permanent link">&para;</a></h2>
+<p>Above this line is Section 7.</p>
+<hr>
+<p>Below this line starts Section 8.</p>
+<h2 id="8-special-characters-unicode">8. Special Characters &amp; Unicode<a class="headerlink" href="#8-special-characters-unicode" title="Permanent link">&para;</a></h2>
+<p>The converter handles Unicode gracefully:</p>
+<ul>
+<li>Emoji: 🚀 🎉 ☕ 💡 🧪 ⚡</li>
+<li>Accented: café, résumé, naïve, Ångström</li>
+<li>Math symbols: π ≈ 3.14159, Σ, Δ, ∞</li>
+<li>Arrows: → ← ↑ ↓ ⇒ ⇔</li>
+<li>Currency: \$100, €200, £300, ¥400</li>
+</ul>
+<hr>
+<h2 id="9-definition-lists">9. Definition Lists<a class="headerlink" href="#9-definition-lists" title="Permanent link">&para;</a></h2>
+<dl>
+<dt>Python</dt>
+<dd>A high-level, general-purpose programming language known for its readable syntax.</dd>
+<dt>Markdown</dt>
+<dd>A lightweight markup language for creating formatted text using a plain-text editor.</dd>
+<dt>PROMTOBIA</dt>
+<dd>The organisation for which this task was proudly completed.</dd>
+</dl>
+<hr>
+<h2 id="10-footnotes">10. Footnotes<a class="headerlink" href="#10-footnotes" title="Permanent link">&para;</a></h2>
+<p>Markdown<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> was created by John Gruber<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> in 2004.</p>
+<hr>
+<p><em>Generated by </em><em>md2html</em><em> · Task done for PROMTOBIA ⚡</em></p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Markdown is a lightweight markup language with plain-text formatting syntax.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>John Gruber is an American blogger and writer.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+</main>
+<footer class="page-footer">Generated by <strong>md2html</strong> &mdash; <span class="promtobia-credit">⚡ Task done for PROMTOBIA</span></footer>
+</body>
+</html>

@@ -1,0 +1,4 @@
+Flask>=3.1,<4
+google-genai>=1.0,<4
+groq>=0.18,<2
+python-dotenv>=1.0,<2

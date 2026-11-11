@@ -20,3 +20,4 @@ dist/
 .~lock.*#
 .DS_Store
 demo/.env
+.gitignore

@@ -19,3 +19,4 @@ dist/
 # Editor and office leftovers
 .~lock.*#
 .DS_Store
+demo/.env
